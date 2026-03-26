@@ -1,8 +1,16 @@
+/**
+ * @file yfy_data_acdc.h
+ * @brief 英飞源模块数据管理头文件
+ * @details 定义英飞源模块的数据结构、宏定义和函数接口
+ *
+ * @version 1.0
+ */
+
 #pragma once
 #include "stdbool.h"
 #include "stdint.h"
 
-//电源模块数量
+// 电源模块数量
 #define YFY_MODULE_NUM (32)
 // 组号1~4
 #define YFY_GROUP_NUM (32)

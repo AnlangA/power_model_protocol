@@ -1,3 +1,11 @@
+/**
+ * @file yyln_api_acdc.h
+ * @brief 英 LEN 模块 API 接口头文件
+ * @details 定义英 LEN 模块的高级 API 接口，包括写入命令、读取命令和数据获取接口
+ *
+ * @version 1.0
+ */
+
 #pragma once
 #include "stdbool.h"
 #include "yyln_data_acdc.h"

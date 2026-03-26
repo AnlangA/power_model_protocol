@@ -1,7 +1,19 @@
+/**
+ * @file yyln_api_acdc.c
+ * @brief 英 LEN 模块 API 接口实现
+ * @details 实现英 LEN 模块的高级 API 接口函数
+ *
+ * @version 1.0
+ */
+
 #include "yyln_data_acdc.h"
 #include "stddef.h"
 
-// 内部辅助函数：检查模块地址是否有效
+/**
+ * @brief 检查模块地址是否有效
+ * @param module_addr 模块地址
+ * @return bool 地址有效性
+ */
 static bool yyln_module_addr_is_available(uint8_t module_addr)
 {
     if (module_addr > YYLN_MODULE_NUM)
@@ -11,6 +23,11 @@ static bool yyln_module_addr_is_available(uint8_t module_addr)
     return true;
 }
 
+/**
+ * @brief 检查组地址是否有效
+ * @param group_addr 组地址
+ * @return bool 地址有效性
+ */
 static bool yyln_group_addr_is_available(uint8_t group_addr)
 {
     if (group_addr > YYLN_GROUP_NUM)

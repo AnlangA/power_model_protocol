@@ -8,14 +8,15 @@
 
 #include "yfy_data_acdc.h"
 #include "string.h"
-#include "macro_acdc.h"
+#include "../macro_acdc.h"
+#include "../module_common.h"
 #include <stdint.h>
 
 static bool yfy_data_acdc_parse(uint8_t dev_id, uint8_t cmd, uint8_t module_addr, uint8_t* pdata);
 static bool yfy_data_acdc_unpack(yfy_module_info_type_t type, uint8_t cmd, uint8_t module_addr, uint8_t* p_data);
 static void yfy_data_acdc_store(uint8_t byte_start, uint8_t byte_end, uint8_t bit_start, uint8_t bit_endd, uint8_t addr, uint8_t* pdata, void* pstore_data);
 static void module_online_check(void);
-static void convert_endianness(const uint8_t *src_data, uint8_t *dst_data, size_t bytes);
+
 static void swap_fields_endianness_by_cmd(uint8_t cmd, uint8_t *pdata, size_t data_len);
 yfy_module_online_info_t stModuleOnlineInfo[YFY_MODULE_NUM] = {0};
 
@@ -309,7 +310,7 @@ static void yfy_data_acdc_store(uint8_t byte_start, uint8_t byte_end, uint8_t bi
         if (bytes > 1)
         {
             // 直接转换拷贝到目标存储
-            convert_endianness(pdata + byte_start, p_data, bytes);
+            module_convert_endianness(pdata + byte_start, p_data, bytes);
         }
         else
         {
@@ -353,7 +354,7 @@ static void swap_fields_endianness_by_cmd(uint8_t cmd, uint8_t *pdata, size_t da
         {
             if (len > 8) { len = 8; }
             uint8_t tmp[8];
-            convert_endianness(pdata + start, tmp, len);
+            module_convert_endianness(pdata + start, tmp, len);
             memcpy(pdata + start, tmp, len);
         }
     }
@@ -463,18 +464,5 @@ static void module_online_check(void)
                 }
             }
         }
-    }
-}
-
-static void convert_endianness(const uint8_t *src_data, uint8_t *dst_data, size_t bytes)
-{
-    if (!src_data || !dst_data || bytes == 0)
-    {
-        return; // Early return if invalid input
-    }
-
-    for (size_t i = 0; i < bytes; i++)
-    {
-        dst_data[i] = src_data[bytes - 1 - i];
     }
 }

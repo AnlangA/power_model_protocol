@@ -17,7 +17,7 @@
  */
 bool yfy_group_power_on(uint32_t group)
 {
-    if(group >= YFY_GROUP_NUM)
+    if (group >= YFY_GROUP_NUM)
     {
         return false;
     }
@@ -32,7 +32,7 @@ bool yfy_group_power_on(uint32_t group)
  */
 bool yfy_group_power_off(uint32_t group)
 {
-    if(group >= YFY_GROUP_NUM)
+    if (group >= YFY_GROUP_NUM)
     {
         return false;
     }
@@ -51,12 +51,12 @@ bool yfy_group_power_off(uint32_t group)
  */
 bool yfy_group_set_voltage_current(uint32_t group, float volt, float current, uint32_t module_numbers, uint32_t module_num_max)
 {
-    //英飞源模块内部会自动除以模块数量，所以这里不需要除以模块数量
-    if(group >= YFY_GROUP_NUM)
+    // 英飞源模块内部会自动除以模块数量，所以这里不需要除以模块数量
+    if (group >= YFY_GROUP_NUM)
     {
         return false;
     }
-    if(group >= module_num_max)
+    if (group >= module_num_max)
     {
         return false;
     }
@@ -64,14 +64,15 @@ bool yfy_group_set_voltage_current(uint32_t group, float volt, float current, ui
     uint32_t current_mA = (uint32_t)(current * 1000);
     yfy_send_write_output_all_by_group(group + 1, volt_mV, current_mA);
 
-    //判断需求电压与开关机状态。
+    // 判断需求电压与开关机状态
     float v_fb = 0;
     float cur_fb = 0;
     yfy_group_get_voltage_current(group, &v_fb, &cur_fb, module_numbers);
-    if((volt_mV >= 150000) & (v_fb <= 150))
+    if ((volt_mV >= MODULE_MIN_OUTPUT_VOLTAGE_MV) && (v_fb <= 150))
     {
         yfy_group_power_on(group);
-    }else if(volt_mV < 150000)
+    }
+    else if (volt_mV < MODULE_MIN_OUTPUT_VOLTAGE_MV)
     {
         yfy_group_power_off(group);
     }
@@ -87,11 +88,11 @@ bool yfy_group_set_voltage_current(uint32_t group, float volt, float current, ui
  */
 bool yfy_group_get_voltage_current(uint32_t group, float* voltage, float* current, uint32_t module_num_max)
 {
-    if(group > YFY_GROUP_NUM)
+    if (group > YFY_GROUP_NUM)
     {
         return false;
     }
-    if(group > module_num_max)
+    if (group > module_num_max)
     {
         return false;
     }
@@ -110,11 +111,11 @@ bool yfy_group_get_voltage_current(uint32_t group, float* voltage, float* curren
  */
 uint32_t yfy_module_status_info(uint32_t module_addr, uint32_t module_num_max)
 {
-    if(module_addr > YFY_MODULE_NUM)
+    if (module_addr > YFY_MODULE_NUM)
     {
         return 0xFFFFFFFF;
     }
-    if(module_addr == 0 || module_addr > module_num_max)
+    if (module_addr == 0 || module_addr > module_num_max)
     {
         return 0xFFFFFFFF;
     }
@@ -123,113 +124,111 @@ uint32_t yfy_module_status_info(uint32_t module_addr, uint32_t module_num_max)
 
     uint32_t fault_bits = 0;
 
-    //输出短路
-    if(module_data->output_short_circuit[module_addr] == 1)
+    // 输出短路
+    if (module_data->output_short_circuit[module_addr] == 1)
     {
         fault_bits |= (1 << 0);
     }
-    //模块内部通信故障
-    if(module_data->module_internal_comm_fault[module_addr] == 1)
+    // 模块内部通信故障
+    if (module_data->module_internal_comm_fault[module_addr] == 1)
     {
         fault_bits |= (1 << 1);
     }
-    //输入或母线异常
-    if(module_data->input_or_bus_abnormal[module_addr] == 1)
+    // 输入或母线异常
+    if (module_data->input_or_bus_abnormal[module_addr] == 1)
     {
         fault_bits |= (1 << 2);
     }
-    //模块休眠
-    if(module_data->module_sleep[module_addr] == 1)
+    // 模块休眠
+    if (module_data->module_sleep[module_addr] == 1)
     {
         fault_bits |= (1 << 3);
     }
-    //模块放电异常
-    if(module_data->module_discharge_abnormal[module_addr] == 1)
+    // 模块放电异常
+    if (module_data->module_discharge_abnormal[module_addr] == 1)
     {
         fault_bits |= (1 << 4);
     }
-    //模块故障告警
-    if(module_data->module_fault[module_addr] == 1)
+    // 模块故障告警
+    if (module_data->module_fault[module_addr] == 1)
     {
         fault_bits |= (1 << 5);
     }
-    //模块保护告警
-    if(module_data->module_protection[module_addr] == 1)
+    // 模块保护告警
+    if (module_data->module_protection[module_addr] == 1)
     {
         fault_bits |= (1 << 6);
     }
-    //风扇故障告警
-    if(module_data->fan_fault[module_addr] == 1)
+    // 风扇故障告警
+    if (module_data->fan_fault[module_addr] == 1)
     {
         fault_bits |= (1 << 7);
     }
-    //过温告警
-    if(module_data->over_temp[module_addr] == 1)
+    // 过温告警
+    if (module_data->over_temp[module_addr] == 1)
     {
         fault_bits |= (1 << 8);
     }
-    //输出过压告警
-    if(module_data->output_overvoltage[module_addr] == 1)
+    // 输出过压告警
+    if (module_data->output_overvoltage[module_addr] == 1)
     {
         fault_bits |= (1 << 9);
     }
-
-    //模块通信中断告警
-    if(module_data->module_comm_interrupt[module_addr] == 1)
+    // 模块通信中断告警
+    if (module_data->module_comm_interrupt[module_addr] == 1)
     {
         fault_bits |= (1 << 10);
     }
-
-    //模块处于限功率
-    if(module_data->module_limit_power[module_addr] == 1)
+    // 模块处于限功率
+    if (module_data->module_limit_power[module_addr] == 1)
     {
         fault_bits |= (1 << 11);
     }
-    //模块ID重复
-    if(module_data->module_id_duplicate[module_addr] == 1)
+    // 模块ID重复
+    if (module_data->module_id_duplicate[module_addr] == 1)
     {
         fault_bits |= (1 << 12);
     }
-    //模块严重不均流
-    if(module_data->module_severe_unbalanced[module_addr] == 1)
+    // 模块严重不均流
+    if (module_data->module_severe_unbalanced[module_addr] == 1)
     {
         fault_bits |= (1 << 13);
     }
-    //三相输入缺相告警
-    if(module_data->three_phase_input_missing[module_addr] == 1)
+    // 三相输入缺相告警
+    if (module_data->three_phase_input_missing[module_addr] == 1)
     {
         fault_bits |= (1 << 14);
     }
-    //三相输入不平衡告警
-    if(module_data->three_phase_input_unbalanced[module_addr] == 1)
+    // 三相输入不平衡告警
+    if (module_data->three_phase_input_unbalanced[module_addr] == 1)
     {
         fault_bits |= (1 << 15);
     }
-    //输入欠压告警
-    if(module_data->input_undervoltage[module_addr] == 1)
+    // 输入欠压告警
+    if (module_data->input_undervoltage[module_addr] == 1)
     {
         fault_bits |= (1 << 16);
     }
-    //输入过压告警
-    if(module_data->input_overvoltage[module_addr] == 1)
+    // 输入过压告警
+    if (module_data->input_overvoltage[module_addr] == 1)
     {
         fault_bits |= (1 << 17);
     }
 
-    //模块 PFC 侧处于关机状态
-    if(module_data->module_pfc_fault[module_addr] == 1)
+    // 模块 PFC 侧处于关机状态
+    if (module_data->module_pfc_fault[module_addr] == 1)
     {
-//        fault_bits |= (1 << 7);
+        // fault_bits |= (1 << 7);
     }
-    //模块 DC 侧处于关机状态
-    if(module_data->module_dc_side_off[module_addr] == 1)
+    // 模块 DC 侧处于关机状态
+    if (module_data->module_dc_side_off[module_addr] == 1)
     {
-//        fault_bits |= (1 << 8);
+        // fault_bits |= (1 << 8);
     }
-    //WALK-IN 使能
-    if(module_data->walk_in_enable[module_addr] == 1)
+    // WALK-IN 使能
+    if (module_data->walk_in_enable[module_addr] == 1)
     {
-//        fault_bits |= (1 << 14);
+        // fault_bits |= (1 << 14);
     }
     return fault_bits;
 }
@@ -240,19 +239,13 @@ uint32_t yfy_module_status_info(uint32_t module_addr, uint32_t module_num_max)
  * @param module_num_max 模块数量
  * @return true 在线, false 离线或地址无效
  */
-/**
- * @brief 检查指定模块是否在线
- * @param module_addr 模块地址
- * @param module_num_max 模块数量
- * @return true 在线, false 离线或地址无效
- */
 bool yfy_module_is_online(uint32_t module_addr, uint32_t module_num_max)
 {
-    if(module_addr == 0 || module_addr > module_num_max)
+    if (module_addr == 0 || module_addr > module_num_max)
     {
         return false;
     }
-    if(module_addr > YFY_MODULE_NUM)
+    if (module_addr > YFY_MODULE_NUM)
     {
         return false;
     }
@@ -269,24 +262,24 @@ bool yfy_module_is_online(uint32_t module_addr, uint32_t module_num_max)
  */
 bool yfy_group_get_status_map(uint32_t group, uint32_t* status_map, uint32_t module_num_max)
 {
-    //获取所有同组的模块的map，进行或操作
+    // 获取所有同组的模块的map，进行或操作
     uint32_t combined_status_map = 0;
     uint8_t module_group;
     uint32_t module_status_map;
     bool result = false;
     bool found_modules = false;
 
-    if(group >= YFY_GROUP_NUM)
+    if (group >= YFY_GROUP_NUM)
     {
         return false;
     }
 
-    group = group + 1; //模块组号从1开始计数
+    group = group + 1;  // 模块组号从1开始计数
     // 遍历所有模块(地址范围1~module_num_max)
     for (uint8_t module_addr = 1; module_addr <= module_num_max; module_addr++)
     {
         // 检查模块是否在线
-        if(yfy_module_is_online(module_addr, module_num_max))
+        if (yfy_module_is_online(module_addr, module_num_max))
         {
             // 获取模块组号
             if (yfy_get_module_group(module_addr, &module_group))
@@ -330,11 +323,11 @@ bool yfy_group_get_status_map(uint32_t group, uint32_t* status_map, uint32_t mod
  */
 bool yfy_group_get_module_number(uint32_t group, uint32_t* module_number, uint32_t module_num_max)
 {
-    if(group > YFY_GROUP_NUM)
+    if (group > YFY_GROUP_NUM)
     {
         return false;
     }
-    if(group > module_num_max)
+    if (group > module_num_max)
     {
         return false;
     }
@@ -352,24 +345,23 @@ bool yfy_group_get_module_number(uint32_t group, uint32_t* module_number, uint32
  */
 bool yfy_module_get_v_ab(uint32_t module_addr, uint32_t* voltage, uint32_t module_num_max)
 {
-    if(module_addr > YFY_GROUP_NUM)
+    if (module_addr > YFY_GROUP_NUM)
     {
         return false;
     }
-    if(module_addr == 0 || module_addr > module_num_max)
+    if (module_addr == 0 || module_addr > module_num_max)
     {
         return false;
     }
     uint16_t voltage_16;
     bool ret = yfy_get_ac_input_voltage_ab((uint8_t)module_addr, &voltage_16);
-    //转换为v
+    // 转换为v
     *voltage = (uint32_t)(voltage_16 * 100);
     return ret;
 }
 
 bool yfy_single_module_temp(uint32_t module_addr, float* temperature)
 {
-
     int8_t temp = 0;
     yfy_get_module_temp(module_addr, &temp);
     *temperature = (float)temp;

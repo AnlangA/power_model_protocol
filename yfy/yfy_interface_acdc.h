@@ -1,3 +1,11 @@
+/**
+ * @file yfy_interface_acdc.h
+ * @brief 英飞源模块接口层头文件
+ * @details 定义英飞源模块的对外接口函数，包括组控制、数据查询等功能
+ *
+ * @version 1.0
+ */
+
 #pragma once
 
 #include "yfy_api_acdc.h"

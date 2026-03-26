@@ -1,8 +1,16 @@
+/**
+ * @file yyln_data_acdc.h
+ * @brief 英 LEN 模块数据管理头文件
+ * @details 定义英 LEN 模块的数据结构、宏定义和函数接口
+ *
+ * @version 1.0
+ */
+
 #pragma once
 #include "stdbool.h"
 #include "stdint.h"
 
-// 模块的起始组号是1,0为广播。模块地址是0的时候，按组号进行广播。组号为0，按模块地址进行点对点传输。模块地址为0，组地址为0暂不清楚会发生什么。
+// 模块的起始组号是1，0为广播。模块地址是0的时候，按组号进行广播。组号为0，按模块地址进行点对点传输。模块地址为0，组地址为0暂不清楚会发生什么。
 #define YYLN_BROADCAST_ADDR 0x00
 
 #define YYLN_MONITOR_ADDR 0x01
